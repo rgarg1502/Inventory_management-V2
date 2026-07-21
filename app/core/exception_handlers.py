@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.core.exceptions import    AlreadyExistsError, BusinessRuleViolationError,    NotFoundError
+from app.core.exceptions import    AlreadyExistsError, BusinessRuleViolationError, NotFoundError
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -17,7 +17,7 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "error": {
                         "code": "NOT_FOUND",
                         "message": exc.message,
-    }
+                    }
             },
         )
 

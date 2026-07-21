@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.core.config import settings
 from app.core.exception_handlers import register_exception_handlers
+from app.health import router as health_router
 
 
 def create_app() -> FastAPI:
@@ -12,11 +13,7 @@ def create_app() -> FastAPI:
 
     register_exception_handlers(app)
 
-    @app.get("/health", tags=["Health"])
-    async def health_check():
-        return {
-            "status": "healthy"
-        }
+    app.include_router(health_router)
 
     return app
 
