@@ -38,4 +38,4 @@ class CategoryRepository(BaseRepository):
 
         result = await self.db.execute(stmt)
 
-        return list(result.scalars().all())
+        return result.scalars().all()
