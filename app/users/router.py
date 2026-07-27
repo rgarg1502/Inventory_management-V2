@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, status, Depends
 from app.database.session import get_db
 from app.users.models import User
-from app.users.schemas import UserCreate, UserResponse, UserUpdate
+from app.users.schemas import UserCreate, UserResponse, UserUpdate,UserLogin
 from app.users.service import UserService
 
 
@@ -59,3 +59,7 @@ async def control_superuser(superuser_flag: UserUpdate, user_id: int, db: AsyncS
     service = UserService(db)
 
     return await service.activate_deactivate_user(superuser_flag, user_id)
+
+@router.patch("/login",status_code=status.HTTP_202_ACCEPTED)
+async def login_user(login_data: UserLogin, db:AsyncSession = Depends(get_db)):
+    service = UserService(db)

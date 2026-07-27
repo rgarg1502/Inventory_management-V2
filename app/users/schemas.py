@@ -28,6 +28,12 @@ class UserUpdate(BaseModel):
     is_superuser: bool | None = None
     is_active: bool | None = None
 
+class UserLogin(BaseModel):
+    email:EmailStr
+    password: Annotated[str, Field(
+        min_length=8, max_length=15
+    )
+    ]
 
 class UserResponse(BaseModel):
     id: int

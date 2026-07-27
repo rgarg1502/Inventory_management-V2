@@ -1,10 +1,12 @@
 
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import AlreadyExistsError, NotFoundError
 from app.users.models import User
 from app.users.repository import UserRepository
-from app.users.schemas import UserCreate, UserUpdate
-from app.users.security import hash_password
+from app.users.schemas import UserCreate, UserLogin, UserUpdate
+from app.users.security import create_access_token, hash_password, verify_password
+from jwt import create
 
 
 class UserService:
@@ -71,3 +73,26 @@ class UserService:
             if user is None:
                 raise NotFoundError(f"User not found with this id {user_id}")
             return await self.repository.update_user(superuser_flag, user_id)
+
+
+    async def user_login(self,login_data:UserLogin):
+        user = await self.repository.get_by_mail(login_data.email)
+        if user is None:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid Email or Password"
+            )
+        is_valid = verify_password(login_data.password,user.hashed_password)
+
+        if not is_valid:
+            raise HTTPException(
+                        status_code=401,
+                        detail="Invalid Email or Password"
+                    )
+
+        access_token = create_access_token(
+            subject=str(user.id)
+        )
+
+
+        
