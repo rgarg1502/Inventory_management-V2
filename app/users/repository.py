@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import AlreadyExistsError
 from .models import User
-from .schemas import UserCreate, UserUpdate
+from .schemas import ChangePassword, UserCreate, UserUpdate
 from sqlalchemy import select
 
 
@@ -67,3 +67,5 @@ class UserRepository:
     #     await self.db.flush()
     #     await self.db.refresh(user)
     #     return user
+
+ 

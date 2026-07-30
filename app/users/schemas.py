@@ -35,6 +35,21 @@ class UserLogin(BaseModel):
     )
     ]
 
+class ChangePassword(BaseModel):
+    old_password: Annotated[str, Field(
+        min_length=8, max_length=15
+    )
+    ]
+    new_password: Annotated[str, Field(
+        min_length=8, max_length=15
+    )
+    ]
+
+class ResetPassword(BaseModel):
+    new_password: Annotated[str, Field(
+        min_length=8, max_length=15
+    )]
+
 class UserResponse(BaseModel):
     id: int
     created_at: datetime
@@ -46,3 +61,5 @@ class UserResponse(BaseModel):
     full_name: str
 
     model_config = ConfigDict(from_attributes=True)
+
+

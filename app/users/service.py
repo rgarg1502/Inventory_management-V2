@@ -4,9 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import AlreadyExistsError, NotFoundError
 from app.users.models import User
 from app.users.repository import UserRepository
-from app.users.schemas import UserCreate, UserLogin, UserUpdate
+from app.users.schemas import ChangePassword, ResetPassword, UserCreate, UserLogin, UserUpdate
 from app.users.security import create_access_token, hash_password, verify_password
-from jwt import create
 
 
 class UserService:
@@ -94,5 +93,33 @@ class UserService:
             subject=str(user.id)
         )
 
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
 
-        
+    async def user_password_change(self, password_data:ChangePassword, user:User):
+            old_pass_valid = verify_password(password_data.old_password, user.hashed_password)
+
+            if not old_pass_valid:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid Password!"
+                )
+            user.hashed_password = hash_password(password_data.new_password)
+            await self.db.commit()
+            return {
+                "message":"Password change successfully"
+            }
+
+    async def resetpassword(self, user_id:int, newpass:ResetPassword):
+        user = await self.repository.get_by_id(user_id)
+
+        if user is None:
+            raise NotFoundError(f"user with this user id: {user_id} does not exist")
+        hashed_password = hash_password(newpass.new_password)
+        user.hashed_password = hashed_password
+        await self.db.commit()
+        return {
+            "message": "Password rsetted Successfully"
+        }
