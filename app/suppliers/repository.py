@@ -19,28 +19,27 @@ class SupplierRepository:
         await self.db.refresh(supplier_data)
         return supplier_data
 
-    async def get_by_id(self,supplier_id:int) -> Supplier:
+    async def get_by_id(self,supplier_id:int) -> Supplier | None:
         stmt = select(Supplier).where(Supplier.id == supplier_id)
         result = await self.db.execute(stmt)
 
         return result.scalar_one_or_none()
 
-    async def get_by_name(self,supplier_name:str) -> Supplier:
+    async def get_by_name(self,supplier_name:str) -> Supplier | None:
         stmt = select(Supplier).where(Supplier.name == supplier_name)
         result = await self.db.execute(stmt)
 
         return result.scalar_one_or_none()
 
-    async def get_all(self) -> list[Supplier]:
+    async def get_all(self) -> list[Supplier] | None:
         stmt = select(Supplier).order_by(Supplier.name)
         result = await self.db.execute(stmt)
         
         return result.scalars().all()
 
     async def update_supplier(self,supplier_id:int,update_data:SupplierUpdate) -> Supplier:
-        stmt = select(Supplier).where(Supplier.id == supplier_id)
-        result = await self.db.execute(stmt)
-        supplier_to_update = result.scalar_one_or_none()
+        
+        supplier_to_update = await self.get_by_id(supplier_id)
 
         if supplier_to_update is None:
             raise NotFoundError(f"supplier with this id :{supplier_id} is not found")
